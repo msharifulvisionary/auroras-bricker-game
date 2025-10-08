@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Auroras Name Bricks Breaker</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 15px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tagline-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .game-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .menu-screen, .game-screen, .score-screen {
+            display: none;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .menu-screen.active, .game-screen.active, .score-screen.active {
+            display: block;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .menu-card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .option-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-color: #fff;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .start-btn, .back-btn, .share-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .start-btn:hover, .back-btn:hover, .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-top: 10px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .game-info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Increased canvas size for better visibility */
+        #gameCanvas {
+            width: 100%;
+            max-width: 700px;
+            height: 75vh;
+            max-height: 800px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            display: block;
+            touch-action: none;
+        }
+
+        /* Added play button styling */
+        .play-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            border: none;
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
+            margin-top: 15px;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.6);
+        }
+
+        /* Added all games history section styling */
+        .all-games-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 15px;
+        }
+
+        .game-history-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game-history-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .game-history-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .game-history-details {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Enhanced score display styling */
+        .score-details {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 15px;
+        }
+
+        .score-details h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .score-item span:first-child {
+            color: #f093fb;
+            font-weight: 600;
+        }
+
+        /* Added percentage display styling */
+        .percentage-display {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .percentage-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .percentage-message {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .history-dropdown {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .history-dropdown option {
+            background: #764ba2;
+            color: #fff;
+        }
+
+        /* <CHANGE> Added styling for view all history button */
+        .view-history-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            border: none;
+            color: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .view-history-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.6);
+        }
+
+        /* <CHANGE> Added styling for level filter dropdown */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .filter-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            text-align: center;
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+
+        .footer a {
+            color: #f093fb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .game-title {
+                font-size: 1.2rem;
+            }
+
+            .logo {
+                width: 50px;
+                height: 50px;
+            }
+
+            .tagline-box {
+                font-size: 0.8rem;
+                padding: 10px 15px;
+            }
+
+            .menu-card {
+                padding: 20px;
+            }
+
+            .option-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            #gameCanvas {
+                height: 65vh;
+                max-height: 600px;
+            }
+
+            .percentage-circle {
+                width: 120px;
+                height: 120px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+    
+    <!-- CSS Styling -->
+<style>
+.sharifulinfo-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  animation: sharifulinfo-fadeIn 0.4s ease;
+  overflow-y: auto;
+  padding: 20px 10px;
+  box-sizing: border-box;
+}
+
+.sharifulinfo-modal-content {
+  position: relative;
+  background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
+  margin: auto;
+  border-radius: 25px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 420px;
+  animation: sharifulinfo-slideIn 0.5s ease;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.sharifulinfo-modal-inner {
+  padding: 30px 25px;
+  position: relative;
+}
+
+.sharifulinfo-modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #1a2a6c, #b21f1f, #fdbb2d);
+  z-index: 1;
+}
+
+.sharifulinfo-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sharifulinfo-close:hover {
+  transform: scale(1.1) rotate(90deg);
+  background: rgba(255, 255, 255, 0.2);
+  color: #fdbb2d;
+}
+
+.sharifulinfo-header {
+  margin-bottom: 30px;
+}
+
+.sharifulinfo-image-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 25px;
+}
+
+.sharifulinfo-image {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  object-fit: cover;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.sharifulinfo-image:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.sharifulinfo-image-overlay {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #1a2a6c, #b21f1f, #fdbb2d);
+  z-index: 1;
+  opacity: 0.5;
+  animation: sharifulinfo-rotate 10s linear infinite;
+}
+
+.sharifulinfo-name {
+  font-size: 26px;
+  margin: 15px 0 10px;
+  font-weight: 700;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.sharifulinfo-department {
+  font-size: 18px;
+  margin: 12px 0;
+  font-weight: 600;
+  color: #fdbb2d;
+  letter-spacing: 1px;
+}
+
+.sharifulinfo-session {
+  font-size: 16px;
+  margin: 10px 0;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.sharifulinfo-profession-container {
+  margin: 20px 0;
+}
+
+.sharifulinfo-profession {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  display: inline-block;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.sharifulinfo-social {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.sharifulinfo-social-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 10px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 18px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sharifulinfo-social-link:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.sharifulinfo-social-link:nth-child(1):hover {
+  background: linear-gradient(135deg, rgba(59, 89, 152, 0.8), rgba(59, 89, 152, 0.9));
+}
+
+.sharifulinfo-social-link:nth-child(2):hover {
+  background: linear-gradient(135deg, rgba(0, 132, 255, 0.8), rgba(0, 132, 255, 0.9));
+}
+
+.sharifulinfo-social-link:nth-child(3):hover {
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.8), rgba(37, 211, 102, 0.9));
+}
+
+.sharifulinfo-social-link:nth-child(4):hover {
+  background: linear-gradient(135deg, rgba(212, 70, 56, 0.8), rgba(212, 70, 56, 0.9));
+}
+
+.sharifulinfo-social-link i {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.sharifulinfo-social-link span {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* Animations */
+@keyframes sharifulinfo-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sharifulinfo-slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sharifulinfo-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 480px) {
+  .sharifulinfo-modal {
+    padding: 10px 5px;
+  }
+  
+  .sharifulinfo-modal-content {
+    max-width: 95%;
+    border-radius: 20px;
+  }
+  
+  .sharifulinfo-modal-inner {
+    padding: 25px 20px;
+  }
+  
+  .sharifulinfo-image {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .sharifulinfo-name {
+    font-size: 22px;
+  }
+  
+  .sharifulinfo-department {
+    font-size: 16px;
+  }
+  
+  .sharifulinfo-session, 
+  .sharifulinfo-profession {
+    font-size: 14px;
+  }
+  
+  .sharifulinfo-social {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .sharifulinfo-social-link {
+    padding: 12px 8px;
+  }
+  
+  .sharifulinfo-social-link i {
+    font-size: 22px;
+  }
+  
+  .sharifulinfo-social-link span {
+    font-size: 11px;
+  }
+  
+  .sharifulinfo-close {
+    top: 10px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    font-size: 26px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 350px) {
+  .sharifulinfo-modal-inner {
+    padding: 20px 15px;
+  }
+  
+  .sharifulinfo-image {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .sharifulinfo-name {
+    font-size: 20px;
+  }
+  
+  .sharifulinfo-social {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-section">
+                <img src="https://i.imgur.com/nIOAmb3.png" alt="Auroras Logo" class="logo">
+                <div class="game-title">Auroras Name Bricks Breaker</div>
+            </div>
+            <div class="tagline-box">
+                ভাঙো ব্রিক, জিতো স্কোর - মজার খেলা, অসাধারণ অভিজ্ঞতা!
+            </div>
+        </div>
+
+        <div class="game-container">
+            <!-- Menu Screen -->
+            <div class="menu-screen active">
+                <div class="menu-card">
+                    <h2>Level নির্বাচন করুন</h2>
+                    <div class="option-group">
+                        <button class="option-btn selected" data-level="easy">Easy</button>
+                        <button class="option-btn" data-level="medium">Medium</button>
+                        <button class="option-btn" data-level="hard">Hard</button>
+                    </div>
+                </div>
+
+                <div class="menu-card">
+                    <h2>Speed নির্বাচন করুন</h2>
+                    <div class="option-group">
+                        <button class="option-btn selected" data-speed="normal">Normal</button>
+                        <button class="option-btn" data-speed="fast">Fast</button>
+                        <button class="option-btn" data-speed="ultra">Ultra Fast</button>
+                    </div>
+                </div>
+
+                <div class="menu-card">
+                    <button class="start-btn">খেলা শুরু করুন</button>
+                    <button class="back-btn" id="viewScoresBtn">স্কোর দেখুন</button>
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div class="game-screen">
+                <div class="game-info">
+                    <div class="game-info-item">
+                        <span>Level:</span>
+                        <span id="currentLevel">Easy</span>
+                    </div>
+                    <div class="game-info-item">
+                        <span>Speed:</span>
+                        <span id="currentSpeed">Normal</span>
+                    </div>
+                    <div class="game-info-item">
+                        <span>Score:</span>
+                        <span id="currentScore">0</span>
+                    </div>
+                    <div class="game-info-item">
+                        <span>Lives:</span>
+                        <span id="currentLives">3</span>
+                    </div>
+                    <div class="game-info-item">
+                        <span>Stage:</span>
+                        <span id="currentStage">1</span>
+                    </div>
+                </div>
+
+                <canvas id="gameCanvas"></canvas>
+
+                <!-- Added play button that shows before game starts -->
+                <div id="playButtonContainer" style="text-align: center; margin-top: 20px;">
+                    <button class="play-btn" id="playBtn">▶ খেলা শুরু করুন</button>
+                </div>
+
+                <div class="game-controls">
+                    <button class="control-btn" id="pauseBtn">Pause</button>
+                    <button class="control-btn" id="quitBtn">Quit</button>
+                </div>
+            </div>
+
+            <!-- Score Screen -->
+            <div class="score-screen">
+                <!-- Percentage display section -->
+                <div id="percentageDisplay"></div>
+                
+                <div class="score-details">
+                    <h3>খেলার ফলাফল</h3>
+                    <div id="scoreContent"></div>
+                </div>
+
+                <!-- Enhanced dropdown for current level/speed play history -->
+                <div class="score-details" id="historySection" style="display:none;">
+                    <h3>এই লেভেল ও স্পিডের খেলার ইতিহাস</h3>
+                    <select class="history-dropdown" id="historyDropdown">
+                        <option value="">একটি খেলা নির্বাচন করুন</option>
+                    </select>
+                    <div id="selectedPlayDetails"></div>
+                </div>
+
+                <!-- <CHANGE> Added button to view all games history -->
+                <button class="view-history-btn" id="viewAllHistoryBtn" style="display:none;">সকল খেলার ইতিহাস দেখুন</button>
+
+                <!-- <CHANGE> Added filter section for level filtering -->
+                <div class="filter-section" id="filterSection" style="display:none;">
+                    <h3>লেভেল অনুযায়ী ফিল্টার করুন</h3>
+                    <select class="history-dropdown" id="levelFilter">
+                        <option value="all">সব লেভেল</option>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+
+                <!-- Added section to show all games history -->
+                <div class="all-games-section" id="allGamesSection" style="display:none;">
+                    <h3 style="margin-bottom: 15px; text-align: center;">সকল খেলার ইতিহাস</h3>
+                    <div id="allGamesContent"></div>
+                </div>
+
+                <button class="share-btn" id="shareBtn">শেয়ার করুন</button>
+                <button class="back-btn" id="backToMenuBtn">মেনুতে ফিরুন</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>Design & Development by <a href="javascript:void(0);" class="designer-link">MD SHARIFUL ISLAM</a></div>
+        <div>© ২০২৫ সরকারি আজিজুল হক কলেজ, বগুড়া — পদার্থবিজ্ঞান বিভাগ।</div>
+    </div>
+    <!-- HTML for the popup -->
+<div class="sharifulinfo-modal" id="sharifulinfoModal">
+  <div class="sharifulinfo-modal-content">
+    <div class="sharifulinfo-modal-inner">
+      <span class="sharifulinfo-close">&times;</span>
+      
+      <div class="sharifulinfo-header">
+        <div class="sharifulinfo-image-container">
+          <img src="https://i.imgur.com/mm2jLrd.png" alt="MD SHARIFUL ISLAM" class="sharifulinfo-image">
+          <div class="sharifulinfo-image-overlay"></div>
+        </div>
+        <h2 class="sharifulinfo-name">MD SHARIFUL ISLAM</h2>
+        <p class="sharifulinfo-department">DEPARTMENT OF PHYSICS</p>
+        <p class="sharifulinfo-session">SESSION: 24-25</p>
+        <div class="sharifulinfo-profession-container">
+          <p class="sharifulinfo-profession">Professional Web Designer & Developer</p>
+        </div>
+      </div>
+      
+      <div class="sharifulinfo-social">
+        <a href="https://www.facebook.com/share/1G1KQHWXH9/" target="_blank" class="sharifulinfo-social-link">
+          <i class="fab fa-facebook-f"></i>
+          <span>Facebook</span>
+        </a>
+        <a href="https://m.me/msharifulvisionary" target="_blank" class="sharifulinfo-social-link">
+          <i class="fab fa-facebook-messenger"></i>
+          <span>Messenger</span>
+        </a>
+        <a href="https://wa.me/8801735757143" target="_blank" class="sharifulinfo-social-link">
+          <i class="fab fa-whatsapp"></i>
+          <span>WhatsApp</span>
+        </a>
+        <a href="mailto:msharifulvisionary@gmail.com" class="sharifulinfo-social-link">
+          <i class="fas fa-envelope"></i>
+          <span>Email</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <script>
+        // Game Configuration
+        const NAMES = [
+            "KAYES", "MALEK", "SOBHAN", "ABIDA", "HEMAL", "NUSRAT", "AHSAN", "RAKIB", "NAHID", "AKIB",
+            "AMINUR", "AURORA", "ARKKO", "BISHAL", "NAFISA", "OISHEE", "TAMIM", "JISAN", "ZAIMA", "FATIN",
+            "RABBY", "NURY", "ISRAFIL", "TITUMIR", "JAKARIYA", "EVA", "JOBAYER", "EMON", "LAZ", "BINDU",
+            "RASEL", "NAZIBUL", "SHARIFUL", "MAHBUB", "MAHIR", "MAYISHA", "KALAM", "KAIF", "KAJOL", "RABBI",
+            "RAKIBUL", "SHIHAB", "SHOHEL", "SIAM", "SOUROV", "TANMIM", "TUSHER", "AHAD", "RAHAT", "TAUFIQUE",
+            "SURAIA", "MEHEDI", "MEHENAJ", "SABBIR", "MOFIDA", "IRAM", "MAHFUZ", "MONIKA", "MOU", "FATEMA",
+            "SUMONA", "MURAD", "NADIM", "TASFI", "NUHASH SAFI", "TITHI", "PIASH", "PRANTO", "OYSHI", "RIMI",
+            "RAIHAN", "NATIK", "ROUSHNY", "SABIQUN", "URMI", "SABIK", "SADIA", "SAMIA", "SHOPNA", "SOAD",
+            "SHEKRRITY", "SURAHYA", "SOLAYMAN", "YEASMIN", "AKHI", "SUMAIYA", "TANVIR", "TAMMI", "JIM", "ZIHAD",
+            "ZAHIN", "YOUSUF", "SAMI", "UDOY"
+        ];
+
+        const COLORS = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788'
+        ];
+
+        // Game State
+        let gameState = {
+            level: 'easy',
+            speed: 'normal',
+            score: 0,
+            lives: 3,
+            isPaused: false,
+            isGameOver: false,
+            startTime: null,
+            lastScoreInfo: null,
+            totalBricks: 0,
+            maxScore: 0,
+            stage: 1,
+            totalStages: 0,
+            totalScore: 0,
+            totalBricksBroken: 0
+        };
+
+        // Canvas Setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const maxWidth = 700;
+            const maxHeight = 800;
+            const width = Math.min(container.clientWidth - 20, maxWidth);
+            const height = Math.min(window.innerHeight * 0.75, maxHeight);
+            
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Game Objects
+        let paddle, ball, bricks = [];
+        let gameStarted = false;
+
+        function initPaddle() {
+            paddle = {
+                width: canvas.width * 0.2,
+                height: 15,
+                x: canvas.width / 2 - (canvas.width * 0.2) / 2,
+                y: canvas.height - 40,
+                speed: 10,
+                dx: 0
+            };
+        }
+
+        function initBall() {
+            const speedMultiplier = gameState.speed === 'normal' ? 1 : gameState.speed === 'fast' ? 1.5 : 2;
+            ball = {
+                x: canvas.width / 2,
+                y: canvas.height - 60,
+                radius: 8,
+                speed: 4 * speedMultiplier,
+                dx: (Math.random() > 0.5 ? 1 : -1) * 3 * speedMultiplier,
+                dy: -4 * speedMultiplier
+            };
+        }
+
+        function initBricks() {
+            bricks = [];
+            let brickRowCount, brickColumnCount;
+            let brickPattern = Math.floor(Math.random() * 3); // Random pattern for variety
+            
+            if (gameState.level === 'easy') {
+                brickRowCount = 5;
+                brickColumnCount = 6;
+            } else if (gameState.level === 'medium') {
+                brickRowCount = 6;
+                brickColumnCount = 7;
+            } else {
+                brickRowCount = 7;
+                brickColumnCount = 8;
+            }
+            
+            const brickWidth = (canvas.width - 60) / brickColumnCount;
+            const brickHeight = 30;
+            const brickPadding = 5;
+            const offsetTop = 50;
+            const offsetLeft = 30;
+
+            const shuffledNames = [...NAMES].sort(() => Math.random() - 0.5);
+            let nameIndex = 0;
+
+            for (let row = 0; row < brickRowCount; row++) {
+                for (let col = 0; col < brickColumnCount; col++) {
+                    let shouldSkip = false;
+                    
+                    // Different patterns for different levels
+                    if (gameState.level === 'easy') {
+                        // Easy level - no skipping bricks
+                        shouldSkip = false;
+                    } else if (gameState.level === 'medium') {
+                        // Medium level - skip some bricks in a pattern
+                        if (brickPattern === 0) {
+                            // Skip corners
+                            if ((row === 0 || row === brickRowCount - 1) && 
+                                (col === 0 || col === brickColumnCount - 1)) {
+                                shouldSkip = true;
+                            }
+                        } else if (brickPattern === 1) {
+                            // Skip every other brick in middle rows
+                            if (row >= 2 && row <= 3 && col % 2 === 0) {
+                                shouldSkip = true;
+                            }
+                        } else {
+                            // Skip random bricks
+                            if (Math.random() > 0.8) {
+                                shouldSkip = true;
+                            }
+                        }
+                    } else {
+                        // Hard level - more complex patterns
+                        if (brickPattern === 0) {
+                            // Skip diagonal pattern
+                            if (row === col || row + col === brickRowCount - 1) {
+                                shouldSkip = true;
+                            }
+                        } else if (brickPattern === 1) {
+                            // Skip checkerboard pattern
+                            if ((row + col) % 2 === 0) {
+                                shouldSkip = true;
+                            }
+                        } else {
+                            // Skip random pattern with higher probability
+                            if (Math.random() > 0.7) {
+                                shouldSkip = true;
+                            }
+                        }
+                    }
+                    
+                    if (shouldSkip) continue;
+
+                    const x = offsetLeft + col * (brickWidth + brickPadding);
+                    const y = offsetTop + row * (brickHeight + brickPadding);
+                    
+                    bricks.push({
+                        x,
+                        y,
+                        width: brickWidth - brickPadding,
+                        height: brickHeight - brickPadding,
+                        status: 1,
+                        name: shuffledNames[nameIndex % shuffledNames.length],
+                        color: COLORS[Math.floor(Math.random() * COLORS.length)]
+                    });
+                    nameIndex++;
+                }
+            }
+            
+            gameState.totalBricks = bricks.length;
+            gameState.maxScore = bricks.length * 10;
+        }
+
+        // Drawing Functions
+        function drawPaddle() {
+            ctx.fillStyle = '#fff';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#fff';
+            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+            ctx.shadowBlur = 0;
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#fff';
+            ctx.fill();
+            ctx.closePath();
+            ctx.shadowBlur = 0;
+        }
+
+        function drawBricks() {
+            bricks.forEach(brick => {
+                if (brick.status === 1) {
+                    // Draw brick with gradient
+                    const gradient = ctx.createLinearGradient(brick.x, brick.y, brick.x, brick.y + brick.height);
+                    gradient.addColorStop(0, brick.color);
+                    gradient.addColorStop(1, adjustBrightness(brick.color, -20));
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                    
+                    // Draw border
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(brick.x, brick.y, brick.width, brick.height);
+                    
+                    // Improved text rendering for better visibility - CAPITAL LETTERS, BOLD, and CENTERED
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = `bold ${Math.min(brick.width / 5, 14)}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    // Calculate text position to center it in the brick
+                    const textX = brick.x + brick.width / 2;
+                    const textY = brick.y + brick.height / 2;
+                    
+                    // Draw the text
+                    ctx.fillText(brick.name, textX, textY);
+                }
+            });
+        }
+
+        // Helper function to adjust color brightness
+        function adjustBrightness(color, amount) {
+            const num = parseInt(color.replace("#",""), 16);
+            const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+            const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+            const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+            return "#" + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+        }
+
+        // Game Logic
+        function movePaddle() {
+            paddle.x += paddle.dx;
+            if (paddle.x < 0) paddle.x = 0;
+            if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
+        }
+
+        function moveBall() {
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Wall collision
+            if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+                ball.dx *= -1;
+            }
+            if (ball.y - ball.radius < 0) {
+                ball.dy *= -1;
+            }
+
+            // Paddle collision
+            if (ball.y + ball.radius > paddle.y &&
+                ball.x > paddle.x &&
+                ball.x < paddle.x + paddle.width) {
+                ball.dy *= -1;
+                const hitPos = (ball.x - paddle.x) / paddle.width;
+                ball.dx = (hitPos - 0.5) * 8 * (gameState.speed === 'normal' ? 1 : gameState.speed === 'fast' ? 1.5 : 2);
+            }
+
+            // Bottom collision (lose life)
+            if (ball.y + ball.radius > canvas.height) {
+                gameState.lives--;
+                updateGameInfo();
+                if (gameState.lives > 0) {
+                    initBall();
+                } else {
+                    gameOver();
+                }
+            }
+
+            // Brick collision
+            let brickHit = false;
+            bricks.forEach(brick => {
+                if (brick.status === 1) {
+                    if (ball.x > brick.x &&
+                        ball.x < brick.x + brick.width &&
+                        ball.y > brick.y &&
+                        ball.y < brick.y + brick.height) {
+                        ball.dy *= -1;
+                        brick.status = 0;
+                        gameState.score += 10;
+                        gameState.totalScore += 10;
+                        gameState.totalBricksBroken++;
+                        updateGameInfo();
+                        brickHit = true;
+                        
+                        // Check if all bricks are broken
+                        if (bricks.every(b => b.status === 0)) {
+                            nextStage();
+                        }
+                    }
+                }
+            });
+        }
+
+        function nextStage() {
+            gameState.stage++;
+            document.getElementById('currentStage').textContent = gameState.stage;
+            initBricks();
+            initBall();
+            
+            // Increase ball speed slightly for each new stage
+            const speedMultiplier = gameState.speed === 'normal' ? 1 : gameState.speed === 'fast' ? 1.5 : 2;
+            const stageSpeedIncrease = 1 + (gameState.stage * 0.1);
+            ball.speed = 4 * speedMultiplier * stageSpeedIncrease;
+            ball.dx = ball.dx > 0 ? Math.abs(ball.dx) * stageSpeedIncrease : -Math.abs(ball.dx) * stageSpeedIncrease;
+            ball.dy = ball.dy > 0 ? Math.abs(ball.dy) * stageSpeedIncrease : -Math.abs(ball.dy) * stageSpeedIncrease;
+        }
+
+        function updateGameInfo() {
+            document.getElementById('currentScore').textContent = gameState.score;
+            document.getElementById('currentLives').textContent = gameState.lives;
+            document.getElementById('currentStage').textContent = gameState.stage;
+        }
+
+        function gameOver(won = false) {
+            gameState.isGameOver = true;
+            const endTime = Date.now();
+            const duration = Math.floor((endTime - gameState.startTime) / 1000);
+            
+            saveScore(duration);
+            showScoreScreen();
+        }
+
+        // Game Loop
+        function gameLoop() {
+            if (gameState.isGameOver) return;
+            if (gameState.isPaused) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            if (!gameStarted) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawBricks();
+            drawPaddle();
+            drawBall();
+            
+            movePaddle();
+            moveBall();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Controls
+        let keys = {};
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === 'ArrowLeft') paddle.dx = -paddle.speed;
+            if (e.key === 'ArrowRight') paddle.dx = paddle.speed;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') paddle.dx = 0;
+        });
+
+        // Mouse/Touch controls
+        let mouseX = 0;
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            paddle.x = mouseX - paddle.width / 2;
+            if (paddle.x < 0) paddle.x = 0;
+            if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            mouseX = touch.clientX - rect.left;
+            paddle.x = mouseX - paddle.width / 2;
+            if (paddle.x < 0) paddle.x = 0;
+            if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
+        });
+
+        // UI Controls
+        document.querySelectorAll('[data-level]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-level]').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                gameState.level = btn.dataset.level;
+            });
+        });
+
+        document.querySelectorAll('[data-speed]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-speed]').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                gameState.speed = btn.dataset.speed;
+            });
+        });
+
+        document.querySelector('.start-btn').addEventListener('click', startGame);
+
+        document.getElementById('playBtn').addEventListener('click', () => {
+            gameStarted = true;
+            document.getElementById('playButtonContainer').style.display = 'none';
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            gameState.isPaused = !gameState.isPaused;
+            document.getElementById('pauseBtn').textContent = gameState.isPaused ? 'Resume' : 'Pause';
+        });
+
+        document.getElementById('quitBtn').addEventListener('click', () => {
+            if (confirm('আপনি কি খেলা ছেড়ে দিতে চান?')) {
+                showMenuScreen();
+            }
+        });
+
+        // <CHANGE> Modified viewScoresBtn to show all history with filter
+        document.getElementById('viewScoresBtn').addEventListener('click', () => {
+            showScoreScreenWithAllHistory();
+        });
+
+        document.getElementById('backToMenuBtn').addEventListener('click', showMenuScreen);
+
+        document.getElementById('shareBtn').addEventListener('click', shareScore);
+
+        // <CHANGE> Added event listener for view all history button
+        document.getElementById('viewAllHistoryBtn').addEventListener('click', () => {
+            document.getElementById('filterSection').style.display = 'block';
+            document.getElementById('allGamesSection').style.display = 'block';
+            document.getElementById('viewAllHistoryBtn').style.display = 'none';
+            loadAllScoreHistory('all');
+        });
+
+        // <CHANGE> Added event listener for level filter
+        document.getElementById('levelFilter').addEventListener('change', (e) => {
+            loadAllScoreHistory(e.target.value);
+        });
+
+        // Screen Management
+        function showMenuScreen() {
+            document.querySelector('.menu-screen').classList.add('active');
+            document.querySelector('.game-screen').classList.remove('active');
+            document.querySelector('.score-screen').classList.remove('active');
+            resetGame();
+        }
+
+        function showGameScreen() {
+            document.querySelector('.menu-screen').classList.remove('active');
+            document.querySelector('.game-screen').classList.add('active');
+            document.querySelector('.score-screen').classList.remove('active');
+        }
+
+        function showScoreScreen() {
+            document.querySelector('.menu-screen').classList.remove('active');
+            document.querySelector('.game-screen').classList.remove('active');
+            document.querySelector('.score-screen').classList.add('active');
+        }
+
+        // <CHANGE> Added new function to show score screen with all history visible
+        function showScoreScreenWithAllHistory() {
+            showScoreScreen();
+            document.getElementById('percentageDisplay').style.display = 'none';
+            document.getElementById('scoreContent').parentElement.style.display = 'none';
+            document.getElementById('historySection').style.display = 'none';
+            document.getElementById('viewAllHistoryBtn').style.display = 'none';
+            document.getElementById('filterSection').style.display = 'block';
+            document.getElementById('allGamesSection').style.display = 'block';
+            loadAllScoreHistory('all');
+        }
+
+        function startGame() {
+            gameState.score = 0;
+            gameState.lives = 3;
+            gameState.isPaused = false;
+            gameState.isGameOver = false;
+            gameState.startTime = Date.now();
+            gameState.stage = 1;
+            gameState.totalScore = 0;
+            gameState.totalBricksBroken = 0;
+            gameStarted = false;
+            
+            document.getElementById('currentLevel').textContent = gameState.level.charAt(0).toUpperCase() + gameState.level.slice(1);
+            document.getElementById('currentSpeed').textContent = gameState.speed === 'normal' ? 'Normal' : gameState.speed === 'fast' ? 'Fast' : 'Ultra Fast';
+            updateGameInfo();
+            
+            initPaddle();
+            initBall();
+            initBricks();
+            
+            document.getElementById('playButtonContainer').style.display = 'block';
+            
+            showGameScreen();
+            gameLoop();
+        }
+
+        function resetGame() {
+            gameState.score = 0;
+            gameState.lives = 3;
+            gameState.isPaused = false;
+            gameState.isGameOver = false;
+            gameStarted = false;
+            gameState.stage = 1;
+            gameState.totalScore = 0;
+            gameState.totalBricksBroken = 0;
+        }
+
+        function saveScore(duration) {
+            const scores = JSON.parse(localStorage.getItem('brickBreakerScores') || '[]');
+            
+            const scoreEntry = {
+                level: gameState.level,
+                speed: gameState.speed,
+                score: gameState.totalScore,
+                maxScore: gameState.maxScore,
+                duration: duration,
+                date: new Date().toLocaleString('bn-BD'),
+                timestamp: Date.now(),
+                stage: gameState.stage,
+                bricksBroken: gameState.totalBricksBroken
+            };
+            
+            scores.push(scoreEntry);
+            localStorage.setItem('brickBreakerScores', JSON.stringify(scores));
+            
+            displayCurrentScore(scoreEntry, scores);
+        }
+
+        // <CHANGE> Modified displayCurrentScore to hide all games section initially and show view button
+        function displayCurrentScore(scoreEntry, allScores) {
+            // Show percentage and score details
+            document.getElementById('percentageDisplay').style.display = 'block';
+            document.getElementById('scoreContent').parentElement.style.display = 'block';
+            
+            const gameKey = `${scoreEntry.level}-${scoreEntry.speed}`;
+            const sameLevelSpeedGames = allScores.filter(s => `${s.level}-${s.speed}` === gameKey);
+            const totalPlays = sameLevelSpeedGames.length;
+            
+            // Calculate percentage based on total bricks broken and stages completed
+            const percentage = Math.round((scoreEntry.bricksBroken / (scoreEntry.stage * gameState.totalBricks)) * 100);
+            
+            // Get fun message based on percentage
+            const message = getPercentageMessage(percentage);
+            
+            // Display percentage
+            const percentageDisplay = document.getElementById('percentageDisplay');
+            percentageDisplay.innerHTML = `
+                <div class="percentage-display">
+                    <div class="percentage-circle">${percentage}%</div>
+                    <div class="percentage-message">${message}</div>
+                </div>
+            `;
+            
+            // Display score details
+            const content = document.getElementById('scoreContent');
+            content.innerHTML = `
+                <div class="score-item">
+                    <span>Level:</span>
+                    <span>${scoreEntry.level.toUpperCase()}</span>
+                </div>
+                <div class="score-item">
+                    <span>Speed:</span>
+                    <span>${scoreEntry.speed === 'normal' ? 'Normal' : scoreEntry.speed === 'fast' ? 'Fast' : 'Ultra Fast'}</span>
+                </div>
+                <div class="score-item">
+                    <span>Score:</span>
+                    <span>${scoreEntry.score} পয়েন্ট</span>
+                </div>
+                <div class="score-item">
+                    <span>Stage:</span>
+                    <span>${scoreEntry.stage}</span>
+                </div>
+                <div class="score-item">
+                    <span>ব্রিক ভাঙা:</span>
+                    <span>${scoreEntry.bricksBroken} টি</span>
+                </div>
+                <div class="score-item">
+                    <span>সময়:</span>
+                    <span>${scoreEntry.duration} সেকেন্ড</span>
+                </div>
+                <div class="score-item">
+                    <span>তারিখ:</span>
+                    <span>${scoreEntry.date}</span>
+                </div>
+                <div class="score-item">
+                    <span>এই লেভেল ও স্পিডে মোট খেলা:</span>
+                    <span>${totalPlays} বার</span>
+                </div>
+            `;
+            
+            gameState.lastScoreInfo = {
+                level: scoreEntry.level,
+                speed: scoreEntry.speed,
+                score: scoreEntry.score,
+                percentage: percentage,
+                duration: scoreEntry.duration,
+                date: scoreEntry.date,
+                totalPlays: totalPlays,
+                playNumber: totalPlays,
+                stage: scoreEntry.stage,
+                bricksBroken: scoreEntry.bricksBroken
+            };
+            
+            loadScoreHistory();
+            
+            // Hide all games section and filter, show view button instead
+            document.getElementById('allGamesSection').style.display = 'none';
+            document.getElementById('filterSection').style.display = 'none';
+            document.getElementById('viewAllHistoryBtn').style.display = 'block';
+        }
+
+        function getPercentageMessage(percentage) {
+            if (percentage === 100) {
+                return "পারফেক্ট! আপনি চ্যাম্পিয়ন! 🏆";
+            } else if (percentage >= 90) {
+                return "অসাধারণ! প্রায় নিখুঁত! 🌟";
+            } else if (percentage >= 80) {
+                return "দুর্দান্ত! খুবই ভালো খেলেছেন! 🎉";
+            } else if (percentage >= 70) {
+                return "চমৎকার! ভালো পারফরম্যান্স! 👏";
+            } else if (percentage >= 60) {
+                return "ভালো! আরও ভালো করতে পারবেন! 💪";
+            } else if (percentage >= 50) {
+                return "মন্দ না! আরেকটু চেষ্টা করুন! 🎯";
+            } else if (percentage >= 40) {
+                return "চেষ্টা চালিয়ে যান! উন্নতি হবে! 🚀";
+            } else if (percentage >= 30) {
+                return "আরও প্র্যাকটিস করুন! হবে! 💫";
+            } else if (percentage >= 20) {
+                return "হাল ছাড়বেন না! চেষ্টা করতে থাকুন! 🌈";
+            } else if (percentage >= 10) {
+                return "শুরুটা খারাপ না! আবার চেষ্টা করুন! 🎮";
+            } else {
+                return "কোন সমস্যা নেই! আবার খেলুন! 😊";
+            }
+        }
+
+        function loadScoreHistory() {
+            const scores = JSON.parse(localStorage.getItem('brickBreakerScores') || '[]');
+            const historySection = document.getElementById('historySection');
+            const dropdown = document.getElementById('historyDropdown');
+            const selectedPlayDetails = document.getElementById('selectedPlayDetails');
+            
+            const gameKey = `${gameState.level}-${gameState.speed}`;
+            const sameLevelSpeedGames = scores.filter(s => `${s.level}-${s.speed}` === gameKey);
+            
+            if (sameLevelSpeedGames.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+            
+            historySection.style.display = 'block';
+            sameLevelSpeedGames.sort((a, b) => b.timestamp - a.timestamp);
+            
+            dropdown.innerHTML = '<option value="">একটি খেলা নির্বাচন করুন</option>';
+            sameLevelSpeedGames.forEach((score, index) => {
+                const playNumber = sameLevelSpeedGames.length - index;
+                const percentage = Math.round((score.bricksBroken / (score.stage * gameState.totalBricks)) * 100);
+                dropdown.innerHTML += `<option value="${index}">${playNumber}তম খেলা - ${score.score} পয়েন্ট (${percentage}%) - ${score.date}</option>`;
+            });
+            
+            dropdown.onchange = (e) => {
+                if (e.target.value === '') {
+                    selectedPlayDetails.innerHTML = '';
+                    return;
+                }
+                
+                const selectedIndex = parseInt(e.target.value);
+                const selectedPlay = sameLevelSpeedGames[selectedIndex];
+                const playNumber = sameLevelSpeedGames.length - selectedIndex;
+                const percentage = Math.round((selectedPlay.bricksBroken / (selectedPlay.stage * gameState.totalBricks)) * 100);
+                
+                selectedPlayDetails.innerHTML = `
+                    <div style="margin-top:15px;">
+                        <div class="score-item">
+                            <span>Level:</span>
+                            <span>${selectedPlay.level.toUpperCase()}</span>
+                        </div>
+                        <div class="score-item">
+                            <span>Speed:</span>
+                            <span>${selectedPlay.speed === 'normal' ? 'Normal' : selectedPlay.speed === 'fast' ? 'Fast' : 'Ultra Fast'}</span>
+                        </div>
+                        <div class="score-item">
+                            <span>খেলা নম্বর:</span>
+                            <span>${playNumber}তম খেলা</span>
+                        </div>
+                        <div class="score-item">
+                            <span>Score:</span>
+                            <span>${selectedPlay.score} পয়েন্ট</span>
+                        </div>
+                        <div class="score-item">
+                            <span>Stage:</span>
+                            <span>${selectedPlay.stage}</span>
+                        </div>
+                        <div class="score-item">
+                            <span>ব্রিক ভাঙা:</span>
+                            <span>${selectedPlay.bricksBroken} টি</span>
+                        </div>
+                        <div class="score-item">
+                            <span>পারসেন্টেজ:</span>
+                            <span>${percentage}%</span>
+                        </div>
+                        <div class="score-item">
+                            <span>সময়:</span>
+                            <span>${selectedPlay.duration} সেকেন্ড</span>
+                        </div>
+                        <div class="score-item">
+                            <span>তারিখ:</span>
+                            <span>${selectedPlay.date}</span>
+                        </div>
+                    </div>
+                `;
+                
+                gameState.lastScoreInfo = {
+                    level: selectedPlay.level,
+                    speed: selectedPlay.speed,
+                    score: selectedPlay.score,
+                    percentage: percentage,
+                    duration: selectedPlay.duration,
+                    date: selectedPlay.date,
+                    totalPlays: sameLevelSpeedGames.length,
+                    playNumber: playNumber,
+                    stage: selectedPlay.stage,
+                    bricksBroken: selectedPlay.bricksBroken
+                };
+            };
+        }
+
+        // <CHANGE> Modified loadAllScoreHistory to accept level filter parameter
+        function loadAllScoreHistory(levelFilter = 'all') {
+            const scores = JSON.parse(localStorage.getItem('brickBreakerScores') || '[]');
+            const allGamesSection = document.getElementById('allGamesSection');
+            const allGamesContent = document.getElementById('allGamesContent');
+            
+            if (scores.length === 0) {
+                allGamesSection.style.display = 'none';
+                return;
+            }
+            
+            allGamesSection.style.display = 'block';
+            
+            // Filter scores by level if not 'all'
+            let filteredScores = scores;
+            if (levelFilter !== 'all') {
+                filteredScores = scores.filter(s => s.level === levelFilter);
+            }
+            
+            if (filteredScores.length === 0) {
+                allGamesContent.innerHTML = '<p style="text-align:center; padding:20px;">এই লেভেলে কোন খেলার ইতিহাস নেই।</p>';
+                return;
+            }
+            
+            filteredScores.sort((a, b) => b.timestamp - a.timestamp);
+            
+            let html = '';
+            filteredScores.forEach((score, index) => {
+                const percentage = Math.round((score.bricksBroken / (score.stage * gameState.totalBricks)) * 100);
+                const speedText = score.speed === 'normal' ? 'Normal' : score.speed === 'fast' ? 'Fast' : 'Ultra Fast';
+                
+                html += `
+                    <div class="game-history-item" onclick="selectGameFromHistory(${scores.indexOf(score)})">
+                        <div class="game-history-header">
+                            <span>${score.level.toUpperCase()} - ${speedText}</span>
+                            <span>${percentage}%</span>
+                        </div>
+                        <div class="game-history-details">
+                            Score: ${score.score} | Stage: ${score.stage} | সময়: ${score.duration}s | ${score.date}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            allGamesContent.innerHTML = html;
+        }
+
+        window.selectGameFromHistory = function(index) {
+            const scores = JSON.parse(localStorage.getItem('brickBreakerScores') || '[]');
+            scores.sort((a, b) => b.timestamp - a.timestamp);
+            const selectedGame = scores[index];
+            
+            const percentage = Math.round((selectedGame.bricksBroken / (selectedGame.stage * gameState.totalBricks)) * 100);
+            const gameKey = `${selectedGame.level}-${selectedGame.speed}`;
+            const sameLevelSpeedGames = scores.filter(s => `${s.level}-${s.speed}` === gameKey);
+            const playNumber = sameLevelSpeedGames.filter(s => s.timestamp <= selectedGame.timestamp).length;
+            
+            gameState.level = selectedGame.level;
+            gameState.speed = selectedGame.speed;
+            gameState.lastScoreInfo = {
+                level: selectedGame.level,
+                speed: selectedGame.speed,
+                score: selectedGame.score,
+                percentage: percentage,
+                duration: selectedGame.duration,
+                date: selectedGame.date,
+                totalPlays: sameLevelSpeedGames.length,
+                playNumber: playNumber,
+                stage: selectedGame.stage,
+                bricksBroken: selectedGame.bricksBroken
+            };
+            
+            // Show percentage and score details when selecting from history
+            document.getElementById('percentageDisplay').style.display = 'block';
+            document.getElementById('scoreContent').parentElement.style.display = 'block';
+            
+            const percentageDisplay = document.getElementById('percentageDisplay');
+            percentageDisplay.innerHTML = `
+                <div class="percentage-display">
+                    <div class="percentage-circle">${percentage}%</div>
+                    <div class="percentage-message">${getPercentageMessage(percentage)}</div>
+                </div>
+            `;
+            
+            const content = document.getElementById('scoreContent');
+            content.innerHTML = `
+                <div class="score-item">
+                    <span>Level:</span>
+                    <span>${selectedGame.level.toUpperCase()}</span>
+                </div>
+                <div class="score-item">
+                    <span>Speed:</span>
+                    <span>${selectedGame.speed === 'normal' ? 'Normal' : selectedGame.speed === 'fast' ? 'Fast' : 'Ultra Fast'}</span>
+                </div>
+                <div class="score-item">
+                    <span>Score:</span>
+                    <span>${selectedGame.score} পয়েন্ট</span>
+                </div>
+                <div class="score-item">
+                    <span>Stage:</span>
+                    <span>${selectedGame.stage}</span>
+                </div>
+                <div class="score-item">
+                    <span>ব্রিক ভাঙা:</span>
+                    <span>${selectedGame.bricksBroken} টি</span>
+                </div>
+                <div class="score-item">
+                    <span>পারসেন্টেজ:</span>
+                    <span>${percentage}%</span>
+                </div>
+                <div class="score-item">
+                    <span>সময়:</span>
+                    <span>${selectedGame.duration} সেকেন্ড</span>
+                </div>
+                <div class="score-item">
+                    <span>তারিখ:</span>
+                    <span>${selectedGame.date}</span>
+                </div>
+                <div class="score-item">
+                    <span>এই লেভেল ও স্পিডে মোট খেলা:</span>
+                    <span>${sameLevelSpeedGames.length} বার</span>
+                </div>
+                <div class="score-item">
+                    <span>খেলা নম্বর:</span>
+                    <span>${playNumber}তম খেলা</span>
+                </div>
+            `;
+            
+            loadScoreHistory();
+            
+            // Scroll to top to see the selected game details
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        function shareScore() {
+            const info = gameState.lastScoreInfo;
+            
+            if (!info) {
+                alert('কোনো স্কোর নির্বাচন করা হয়নি!');
+                return;
+            }
+            
+            const speedText = info.speed === 'normal' ? 'Normal' : info.speed === 'fast' ? 'Fast' : 'Ultra Fast';
+            const bengaliNumbers = ['১ম', '২য়', '৩য়', '৪র্থ', '৫ম', '৬ষ্ঠ', '৭ম', '৮ম', '৯ম', '১০ম'];
+            const playText = info.playNumber <= 10 ? bengaliNumbers[info.playNumber - 1] : `${info.playNumber}তম`;
+            
+            const scoreText = `🎮 Auroras Name Bricks Breaker\n\n` +
+                `🎯 Level: ${info.level.toUpperCase()}\n` +
+                `⚡ Speed: ${speedText}\n` +
+                `💯 Score: ${info.score} পয়েন্ট (${info.percentage}%)\n` +
+                `🏆 Stage: ${info.stage}\n` +
+                `🧱 ব্রিক ভাঙা: ${info.bricksBroken} টি\n` +
+                `⏱️ সময়: ${info.duration} সেকেন্ড\n` +
+                `📅 তারিখ: ${info.date}\n` +
+                `🎮 এই লেভেল ও স্পিডে মোট খেলা: ${info.totalPlays} বার\n` +
+                `🏆 এটি: ${playText} খেলা\n\n` +
+                `${getPercentageMessage(info.percentage)}\n\n` +
+                `আমার স্কোর দেখুন! 🏆`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Auroras Name Bricks Breaker',
+                    text: scoreText
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(scoreText).then(() => {
+                    alert('স্কোর কপি হয়েছে! এখন শেয়ার করুন।');
+                }).catch(() => {
+                    alert('শেয়ার করতে সমস্যা হয়েছে।');
+                });
+            }
+        }
+
+        // Initialize
+        resizeCanvas();
+    </script>
+    
+    <!-- JavaScript -->
+<script>
+// Get modal element
+const sharifulinfoModal = document.getElementById('sharifulinfoModal');
+
+// Function to open modal
+function openSharifulinfoModal() {
+  sharifulinfoModal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+// Function to close modal
+function closeSharifulinfoModal() {
+  sharifulinfoModal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking on X
+document.querySelector('.sharifulinfo-close').addEventListener('click', closeSharifulinfoModal);
+
+// Close modal when clicking outside of it
+window.addEventListener('click', function(event) {
+  if (event.target === sharifulinfoModal) {
+    closeSharifulinfoModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeSharifulinfoModal();
+  }
+});
+
+// Update your footer link to use this function
+document.addEventListener('DOMContentLoaded', function() {
+  const designerLink = document.querySelector('.designer-link');
+  if (designerLink) {
+    designerLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      openSharifulinfoModal();
+    });
+  }
+});
+</script>
+</body>
+</html>
